@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+error_reporting(E_ALL);
+
+define('ROOT', __DIR__ . '/');
+define('D', DIRECTORY_SEPARATOR);
+define('DATA_DIR', ROOT.'Data');
+define('PLUGINS_DIR', ROOT.'Plugins');
+
+include_once ROOT . 'Core' . D . 'Autoloader.php';
+$autoloader = Core\Autoloader::getInstance();
+
+/*
+ * Init autoloading
+ */
+$autoloader->registerPath(ROOT);
+$autoloader->register();
+
+/*
+ * Run application
+ */
+exit(Core\Application::getInstance()->run(DATA_DIR . D . 'core.dat'));
+
+
+
