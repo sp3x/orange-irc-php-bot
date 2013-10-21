@@ -42,7 +42,8 @@ abstract class AbstractPlugin
      */
     public function message($to, $message)
     {
-        $this->getIrc()->sendCommand("PRIVMSG $to :$message");
+        if($this->getIrc()->ready())
+            $this->getIrc()->sendCommand("PRIVMSG $to :$message");
     }
     
     /**

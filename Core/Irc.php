@@ -13,6 +13,12 @@ class Irc extends ClientSocket
     private $_nick;
     
     /**
+     * Specifies if IRC is ready to receive commands
+     * @var bool
+     */
+    private $_ready = false;
+    
+    /**
      * Password of the server
      * @var string
      */
@@ -82,6 +88,7 @@ class Irc extends ClientSocket
     public function getConnection()
     {
         while (!$this->connected()) {
+            $this->_ready = false;
             if(!$this->_firstConnect) {
                 fwrite(STDERR, 'ERROR: Reconnecting to IRC-Server (in '.$this->getTimeout().'s)...'."\n");
                 sleep($this->getTimeout());
@@ -90,6 +97,7 @@ class Irc extends ClientSocket
             $this->connect();
             $this->register();
             $this->_firstConnect = false;
+            $this->_ready = true;
         }
     }
     
@@ -98,6 +106,11 @@ class Irc extends ClientSocket
         $nick = $this->getNick();
         $this->sendCommand("USER $nick $nick $nick OrangeBot :$nick");
         $this->sendCommand("NICK $nick");
+    }
+    
+    public function ready()
+    {
+        return $this->_ready;
     }
     
     /**

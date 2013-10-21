@@ -52,9 +52,9 @@ class Plugin extends AbstractPlugin implements PluginInterface
             return $this->message($irc->getChannel(), 'Usage: !asladd [USERNAME] [AGE] [LOCATION] [SKILLS]');
         }
 
-        /*if($nick != $irc->getFrom() || !$this->isOperator($irc->getFrom())) {
-            return $this->message($irc->getChannel(), 'Only '.$nick.' itself or an op can do that!');
-        }*/
+        if($nick != $irc->getFrom() /*|| !$this->isOperator($irc->getFrom())*/) {
+            return $this->message($irc->getChannel(), 'Only '.$nick.' itself or an op (not implemented) can do that!');
+        }
 
         $config = $this->getStorage()->add(array(
             $nick => array(

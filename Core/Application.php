@@ -78,16 +78,28 @@ class Application extends Console
         while($this->_run) {
             try {
                 $response = $this->getIrc()->getResponse();
+                $this->getEventManagerIrc()->trigger('irc.received', $response);
+                $this->getEventManagerIrc()->trigger('irc.preDispatch', $response);
                 
                 // Trigger event for received command
+                $this->getEventManagerIrc()->trigger('*', $response);
                 $this->getEventManagerIrc()->trigger($response->getCommand(), $response);
                 
                 // Trigger event for received bot command
                 if ($response->getTrail()[0] == '!') {
+                    $this->getEventManagerIrc()->trigger('irc.preCommand', $response);
+                    // If $response has been filtered, drop it.
+                    if($this->getIrc()->connected() && $response->dropped())
+                        continue;
+                    
                     $command = new Command($response->getTrail());
                     if ($command->isValid())
                         $this->getEventManagerBot()->trigger($command->getCommand(), $response, $command);
+                    
+                    $this->getEventManagerIrc()->trigger('irc.postCommand', $response);
                 }
+                
+                $this->getEventManagerIrc()->trigger('irc.postDispatch', $response);
             } catch (ConnectionException $e) {
                 $this->error($e->getMessage());
             }

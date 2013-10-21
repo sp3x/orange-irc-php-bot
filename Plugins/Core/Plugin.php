@@ -9,6 +9,7 @@ use Core\Command;
 
 class Plugin extends AbstractPlugin implements PluginInterface
 {
+    private $_debug = false;
 
     /**
      * (non-PHPdoc)
@@ -19,6 +20,7 @@ class Plugin extends AbstractPlugin implements PluginInterface
 	    
 	    $this->message($this->getIrc()->getOperator(), 'Hallo :) I\'am online!');
 	    
+	    $this->attach('irc.preCommand', 'preCommand');
         $this->attach('PING',     'pong');
         $this->attach('!help',    'help',    'Display avilable commands with usage');
         $this->attach('!quit',    'quit',    'Stop the bot',    static::ACCESS_BOTOP);
@@ -26,6 +28,8 @@ class Plugin extends AbstractPlugin implements PluginInterface
         $this->attach('!irc',     'irc',     '[IRC_CMD] Execute params as IRC command', static::ACCESS_BOTOP);
         $this->attach('!enable',  'enable',  '[CMD] Enable command', static::ACCESS_BOTOP);
         $this->attach('!disable', 'disable', '[CMD] Disable command', static::ACCESS_BOTOP);
+        $this->attach('*', 'debug');
+        $this->attach('!debug', 'debug', 'Enable debugging', static::ACCESS_BOTOP);
         
         /*
          * Disable disabled plugins from storage
@@ -35,6 +39,24 @@ class Plugin extends AbstractPlugin implements PluginInterface
             if($disabled)
                 $em->disable($event);
         }
+	}
+	
+	public function debug(IrcResponse $irc, Command $cmd = NULL)
+	{
+	    if($cmd !== NULL) // Enable
+	       $this->_debug = true;    
+	    
+	    if($this->_debug)
+	       $this->message($this->getIrc()->getOperator(), $irc->getRow());
+	}
+	
+	public function preCommand(IrcResponse $irc)
+	{
+	    $row = $irc->getTrail();echo $row."\n";
+	    if(!preg_match('|^[\|/#<>A-Za-z0-9!"§$%&/()=?´` ;,:._-]*$|', $row, $matches)) {
+	        $this->message($irc->getFrom(), 'Invalid input data: '.$row);
+	        $irc->drop();
+	    }
 	}
 
 	/**

@@ -19,6 +19,8 @@ class IrcResponse
 
     private $_channel;
     
+    private $_dropped = false;
+    
     public function __construct($row, $nick)
     {
         $regex = '/^(:(?<prefix>\S+) )?(?<command>\S+)( (?!:)(?<params>.+?))?( :(?<trail>.+))?$/';
@@ -38,6 +40,16 @@ class IrcResponse
             $this->setChannel($this->getFrom());
         else
             $this->setChannel($this->getParams());
+    }
+    
+    public function dropped()
+    {
+        return $this->_dropped;
+    }
+    
+    public function drop()
+    {
+        $this->_dropped = true;
     }
 
 	public function getPrefix() {
