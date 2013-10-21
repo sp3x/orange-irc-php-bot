@@ -53,7 +53,7 @@ class Plugin extends AbstractPlugin implements PluginInterface
 	public function preCommand(IrcResponse $irc)
 	{
 	    $row = $irc->getTrail();echo $row."\n";
-	    if(!preg_match('|^[\|/#<>A-Za-z0-9!"§$%&/()=?´` ;,:._-]*$|', $row, $matches)) {
+	    if(!preg_match('|^[\|/#<>A-Za-z0-9!"§$%+&/()=?´` ;,:._-]*$|', $row, $matches)) {
 	        $this->message($irc->getFrom(), 'Invalid input data: '.$row);
 	        $irc->drop();
 	    }
